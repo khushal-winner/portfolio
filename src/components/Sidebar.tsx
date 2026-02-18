@@ -10,6 +10,7 @@ export default function Sidebar() {
             src="me.jpg"
             alt="Khushal Malhotra - Software Engineer"
             className="w-full h-full object-cover"
+            style={{ objectPosition: "center 30%" }}
             loading="eager"
           />
         </div>
