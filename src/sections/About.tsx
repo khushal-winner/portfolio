@@ -33,7 +33,7 @@ export default function About() {
 
         <div className="space-y-4 bg-bg-secondary p-5 rounded-card border border-border-default/40">
           {/* <p className="text-[14px] sm:text-[15px] text-text-secondary leading-[1.8]">
-                        I'm <span className="text-text-primary font-medium">Abhinav Jaiswal</span>, a Software Engineer based in{' '}
+                        I'm <span className="text-text-primary font-medium">Khushal malhotra</span>, a Software Engineer based in{' '}
                         <span className="text-text-primary">Bangalore, India</span>. Passionate about programming, web development,
                         and building scalable solutions to solve real-world problems.
                     </p>
