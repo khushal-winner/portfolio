@@ -1,0 +1,213 @@
+%-------------------------
+% Resume in Latex
+% Author : Khushal Malhotra
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%-------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    \textbf{\Huge \scshape Khushal Malhotra} \\ \vspace{1pt}
+    \small +91 9990633775 $|$ \href{mailto:khushalmalhotra775@gmail.com}{\underline{khushalmalhotra775@gmail.com}} $|$
+    \href{https://www.linkedin.com/in/khushal-malhotra-643232207/}{\underline{LinkedIn}} $|$
+    \href{https://github.com/khushal-winner}{\underline{GitHub}}
+\end{center}
+
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+\resumeSubheading
+  {Web Development Intern}{July 2025 -- Present}
+  {Under Mentorship of Senior Developer}{Remote, India}
+  \resumeItemListStart
+    \resumeItem{Contributing to real-world full-stack client projects under the mentorship of a senior developer, working with React, Next.js, TypeScript, and Authentication}
+    \resumeItem{Developed and deployed scalable features in production environments, improving performance and maintainability of client-facing applications}
+    \resumeItem{Built reusable components and integrated REST APIs, enhancing team productivity and reducing development time by 20\%}
+  \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%-----------OPEN SOURCE CONTRIBUTIONS-----------
+\section{Open Source Contributions}
+  \resumeSubHeadingListStart
+\resumeSubheading
+  {Open Source Contributor}{2024 -- Present}
+  {Multiple Projects}{}
+  \resumeItemListStart
+    \resumeItem{Contributed to 37+ merged pull requests across major open-source projects including KubeStellar, Cal.com, and others.}
+    \resumeItem{\href{https://github.com/search?q=author\%3Akhushal-winner+is\%3Apr+is\%3Amerged\&type=pullrequests}{View all merged PRs on GitHub}}
+    \resumeItem{Fixed bugs, implemented features, and improved documentation in production codebases}
+    \resumeItem{Collaborated with maintainers and community members to review and merge contributions}
+    \resumeItem{Demonstrated expertise in TypeScript, React, and full-stack development through code contributions}
+  \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+
+%-----------PROGRAMMING SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Languages}{: JavaScript, TypeScript, C++, HTML, CSS} \\
+     \textbf{Frameworks}{: React.js, Node.js, Express.js, Socket.io, Next.js, Zustand} \\
+     \textbf{Design and UI Tools}{: Tailwind CSS, DaisyUI, Chakra UI, Shadcn UI, Git, Framer Motion} \\
+     \textbf{ORM and Database}{: MongoDB, Neon (PostgreSQL), Redis, Mongoose, Prisma} \\
+     \textbf{Authentication \& Dev Tools}{: Clerk, JWT, Stripe, Convex, Webhooks}
+    }}
+ \end{itemize}
+
+%-----------PROJECTS-----------
+\section{Projects}
+
+\resumeSubHeadingListStart
+
+\resumeProjectHeading
+      {\textbf{ShinkAI -- AI Resume \& Interview Coach} $|$ \href{https://shinkai-khushal.vercel.app/}{\underline{Live}} $|$ \href{https://github.com/khushal-winner/shinkai}{\underline{GitHub}}}
+      {}
+    \resumeItemListStart
+      \resumeItem{Built an AI career assistant using \textbf{Next.js 15}, \textbf{React 19}, and \textbf{Tailwind CSS}.}
+      \resumeItem{Used \textbf{Clerk} for auth, \textbf{Google Gemini API} for resume, cover letter, and mock interview generation.}
+      \resumeItem{Implemented markdown-based editors with \textbf{@uiw/react-md-editor} and PDF export via \textbf{html2pdf.js}.}
+      \resumeItem{Created dynamic dashboards with \textbf{Recharts} and clean UI using \textbf{Radix UI} and \textbf{Shadcn/UI}.}
+      \resumeItem{Integrated \textbf{Prisma ORM} with \textbf{Neon Postgres} and background jobs via \textbf{Inngest}.}
+      \resumeItem{Ensured dark mode support and responsiveness using \textbf{next-themes} and mobile-first design.}
+    \resumeItemListEnd
+
+
+\resumeProjectHeading
+      {\textbf{Volty - AI Code Companion:} \hfill \href{https://volty-green.vercel.app}{Live Link} $|$ \href{https://github.com/khushal-winner/Volt}{GitHub Code}}
+      {}
+         \resumeItemListStart
+\resumeItem{Built an AI-powered micro SaaS platform using \textbf{Next.js 15}, \textbf{Convex}, \textbf{Google Auth}, and \textbf{React}.}
+\resumeItem{Integrated \textbf{Sandpack} for live in-browser code editing and preview, requiring zero local setup.}
+\resumeItem{Integrated AI code generation and chat assistant using \textbf{Google Gemini API} with context awareness.}
+\resumeItem{Designed a token-based pricing system with four tiers, from Free (50K tokens) to Unlimited (\(\infty\) tokens).}
+\resumeItem{Built persistent cloud storage with real-time project syncing across devices using the Convex database.}
+\resumeItem{Created a responsive UI using \textbf{Tailwind CSS} and \textbf{Shadcn/UI} components for a modern user experience.}
+\resumeItemListEnd
+      
+\resumeProjectHeading
+      {\textbf{Chaty -- Chat App} $|$ \href{https://chatu-chat-app-1.onrender.com/login}{\underline{Live}} $|$ \href{https://github.com/khushal-winner/Chatu-chat-app}{\underline{GitHub}}}
+      {}
+    \resumeItemListStart
+      \resumeItem{Developed a full-stack chat web application using \textbf{MongoDB, Express.js, React.js, Node.js} (MERN stack).}
+      \resumeItem{Implemented authentication and authorization with \textbf{JWT}.}
+      \resumeItem{Enabled real-time messaging and online user status using \textbf{Socket.io}.}
+      \resumeItem{Designed a responsive and modern UI using \textbf{TailwindCSS} and \textbf{DaisyUI}.}
+      \resumeItem{Managed global state efficiently using \textbf{Zustand}.}
+    \resumeItemListEnd
+          
+    \resumeSubHeadingListEnd
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Netaji Subhas University of Technology}{Main Campus, Dwarka}
+      {Bachelor of Technology in Electronics and Communication Engineering}{Aug. 2024 -- May 2028}
+    \resumeSubheading
+      {JEE Mains Qualified}{}
+      {98.6 Percentile}{April 2024 }
+  \resumeSubHeadingListEnd
+
+%-------------------------------------------
+\end{document}

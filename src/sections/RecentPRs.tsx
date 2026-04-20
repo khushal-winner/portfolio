@@ -70,7 +70,9 @@ export default function RecentPRs() {
 
       console.log("Formatted PRs:", formattedPRs);
 
-      // Filter out user's own repositories
+      // IMPORTANT: Filter out user's own repositories (khushal-winner/)
+      // PRs from own repos should NEVER be counted or displayed anywhere in the application
+      // This ensures only open source contributions to other projects are shown
       const filteredPRs = formattedPRs.filter(pr => !pr.repository.full_name.startsWith('khushal-winner/'));
       console.log("Filtered PRs (excluding own repos):", filteredPRs);
 

@@ -1,25 +1,37 @@
+// SOURCE OF TRUTH: resume.tex
+// This file should be kept in sync with the LaTeX resume file
+// Update resume.tex first, then update this file to match
+
 import { GraduationCap, Code, Briefcase } from "lucide-react";
 import { SectionHeader, useInView } from "../components/Shared";
+import { contributions } from "../data/contributions";
 
 interface TimelineEntry {
   title: string;
   company: string;
   period: string;
   description: string | string[];
+  link?: string;
 }
 
 const experience: TimelineEntry[] = [
   {
-    title: "Intern",
-    company: "Company Name",
-    period: "Oct 2025 — Dec 2025",
+    title: "Web Development Intern",
+    company: "Under Mentorship of Senior Developer",
+    period: "July 2025 — Present",
     description: [
-      "Developed and implemented responsive web applications using modern frontend frameworks",
-      "Collaborated with cross-functional teams to design and optimize user interfaces",
-      "Contributed to code reviews and implemented best practices for maintainable code",
-      "Assisted in troubleshooting and debugging applications to improve performance",
+      "Contributing to real-world full-stack client projects under the mentorship of a senior developer, working with React, Next.js, TypeScript, and Authentication",
+      "Developed and deployed scalable features in production environments, improving performance and maintainability of client-facing applications",
+      "Built reusable components and integrated REST APIs, enhancing team productivity and reducing development time by 20%",
     ],
   },
+  ...contributions.map((c) => ({
+    title: c.title,
+    company: c.repository,
+    period: c.period,
+    description: c.description,
+    link: c.link,
+  })),
 ];
 
 const education: TimelineEntry[] = [
@@ -66,11 +78,10 @@ function TimelineItem({
   return (
     <div
       ref={itemView.ref}
-      className={`relative pl-8 pb-8 last:pb-0 transition-all duration-500 ${
-        itemView.isInView
-          ? "opacity-100 translate-x-0"
-          : "opacity-0 -translate-x-6"
-      }`}
+      className={`relative pl-8 pb-8 last:pb-0 transition-all duration-500 ${itemView.isInView
+        ? "opacity-100 translate-x-0"
+        : "opacity-0 -translate-x-6"
+        }`}
       style={{ transitionDelay: `${index * 150}ms` }}
     >
       {/* Timeline dot */}
@@ -79,7 +90,19 @@ function TimelineItem({
       <div className="absolute left-[4px] top-4 bottom-0 w-[2px] bg-border-default last:hidden" />
 
       <h3 className="text-[15px] font-bold text-text-primary">{entry.title}</h3>
-      <p className="text-[14px] text-text-secondary mt-0.5">{entry.company}</p>
+      <p className="text-[14px] text-text-secondary mt-0.5">
+        {entry.company}
+        {entry.link && (
+          <a
+            href={entry.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2 text-accent-primary hover:underline text-[13px]"
+          >
+            View Contributions →
+          </a>
+        )}
+      </p>
       <p className="text-[13px] text-accent-primary font-medium mt-1.5 mb-2">
         {entry.period}
       </p>
