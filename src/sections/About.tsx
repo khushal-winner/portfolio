@@ -1,5 +1,6 @@
 import { FolderOpen } from "lucide-react";
 import { SectionHeader, useInView } from "../components/Shared";
+import RecentPRs from "./RecentPRs";
 
 const featuredProjects = [
   {
@@ -54,6 +55,9 @@ export default function About() {
           </p>
         </div>
       </div>
+
+      {/* Recent Contributions */}
+      <RecentPRs />
 
       {/* Featured Portfolios */}
       <div

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 interface SectionHeaderProps {
     icon: React.ReactNode;
-    title: string;
+    title: React.ReactNode;
     isH1?: boolean;
 }
 
