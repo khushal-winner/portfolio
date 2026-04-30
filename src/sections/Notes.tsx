@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Lock, Save, LogOut, FileText, Menu, Plus, X, Folder, FolderOpen, ChevronRight, ChevronDown, MoreVertical, Upload } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { createClient } from "@insforge/sdk";
 
 interface File {
   id: string;
@@ -19,15 +20,21 @@ interface Folder {
 
 const CORRECT_PASSWORD = import.meta.env.VITE_NOTES_PASSWORD || "your-secret-password";
 
+// Initialize InsForge client
+const client = createClient({
+  baseUrl: import.meta.env.VITE_INSFORGE_BASE_URL || "",
+  anonKey: import.meta.env.VITE_INSFORGE_ANON_KEY || "",
+});
+
 export default function Notes() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem("notes-auth") === "true";
   });
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [notes, setNotes] = useState(() => {
-    return localStorage.getItem("notes-content") || "";
-  });
+  const [notes, setNotes] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [dbError, setDbError] = useState<string | null>(null);
   const [activeFile, setActiveFile] = useState<string | null>(null);
   const [markdownContent, setMarkdownContent] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -45,42 +52,102 @@ export default function Notes() {
   const [uploadFileContent, setUploadFileContent] = useState("");
   const PYTHON_FOLDER_ID = "folder-python";
 
-  const [files, setFiles] = useState(() => {
-    const savedFiles = localStorage.getItem("notes-files");
-    if (savedFiles) {
-      return JSON.parse(savedFiles);
-    }
-    return [
-      { id: "python-chapter1", name: "Python Chapter 1", path: "/notes/python-chapter1.md", isCustom: false, folderId: PYTHON_FOLDER_ID },
-      { id: "python-chapter2", name: "Python Chapter 2", path: "/notes/python-chapter2.md", isCustom: false, folderId: PYTHON_FOLDER_ID }
-    ];
-  });
+  const [files, setFiles] = useState<File[]>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
 
-  const [folders, setFolders] = useState(() => {
-    const savedFolders = localStorage.getItem("notes-folders");
-    if (savedFolders) {
-      return JSON.parse(savedFolders);
-    }
-    return [
-      { id: PYTHON_FOLDER_ID, name: "Python", isExpanded: true }
-    ];
-  });
-
-  // Clear localStorage and reset to fix folder ID issues
+  // Load data from InsForge database
   useEffect(() => {
-    console.log('Clearing localStorage to fix folder ID issues...');
-    localStorage.removeItem("notes-folders");
-    localStorage.removeItem("notes-files");
+    if (!isAuthenticated) return;
 
-    // Reset to default state with correct IDs
-    setFolders([
-      { id: PYTHON_FOLDER_ID, name: "Python", isExpanded: true }
-    ]);
-    setFiles([
-      { id: "python-chapter1", name: "Python Chapter 1", path: "/notes/python-chapter1.md", isCustom: false, folderId: PYTHON_FOLDER_ID },
-      { id: "python-chapter2", name: "Python Chapter 2", path: "/notes/python-chapter2.md", isCustom: false, folderId: PYTHON_FOLDER_ID }
-    ]);
-  }, []);
+    const loadData = async () => {
+      setIsLoading(true);
+      setDbError(null);
+
+      try {
+        // Load folders
+        const { data: foldersData, error: foldersError } = await client
+          .from("notes_folders")
+          .select("*")
+          .order("created_at", { ascending: true });
+
+        if (foldersError) throw foldersError;
+
+        // Load files
+        const { data: filesData, error: filesError } = await client
+          .from("notes_files")
+          .select("*")
+          .order("created_at", { ascending: true });
+
+        if (filesError) throw filesError;
+
+        // Load quick notes
+        const { data: notesData, error: notesError } = await client
+          .from("notes_quick")
+          .select("content")
+          .single();
+
+        if (notesError && notesError.code !== "PGRST116") throw notesError;
+
+        // Set default data if empty
+        if (!foldersData || foldersData.length === 0) {
+          // Create default Python folder
+          const { data: newFolder, error: createError } = await client
+            .from("notes_folders")
+            .insert([{ id: PYTHON_FOLDER_ID, name: "Python", is_expanded: true }])
+            .select()
+            .single();
+
+          if (createError) throw createError;
+          setFolders([{ id: PYTHON_FOLDER_ID, name: "Python", isExpanded: true }]);
+        } else {
+          setFolders(foldersData.map((f: { id: string; name: string; is_expanded: boolean }) => ({
+            id: f.id,
+            name: f.name,
+            isExpanded: f.is_expanded
+          })));
+        }
+
+        if (!filesData || filesData.length === 0) {
+          // Create default files
+          const defaultFiles = [
+            { id: "python-chapter1", name: "Python Chapter 1", path: "/notes/python-chapter1.md", is_custom: false, folder_id: PYTHON_FOLDER_ID, content: null },
+            { id: "python-chapter2", name: "Python Chapter 2", path: "/notes/python-chapter2.md", is_custom: false, folder_id: PYTHON_FOLDER_ID, content: null }
+          ];
+
+          const { error: createFilesError } = await client
+            .from("notes_files")
+            .insert(defaultFiles);
+
+          if (createFilesError) throw createFilesError;
+
+          setFiles([
+            { id: "python-chapter1", name: "Python Chapter 1", path: "/notes/python-chapter1.md", isCustom: false, folderId: PYTHON_FOLDER_ID },
+            { id: "python-chapter2", name: "Python Chapter 2", path: "/notes/python-chapter2.md", isCustom: false, folderId: PYTHON_FOLDER_ID }
+          ]);
+        } else {
+          setFiles(filesData.map((f: { id: string; name: string; path: string; is_custom: boolean; folder_id: string | null; content: string | null }) => ({
+            id: f.id,
+            name: f.name,
+            path: f.path,
+            isCustom: f.is_custom,
+            folderId: f.folder_id || undefined,
+            content: f.content || undefined
+          })));
+        }
+
+        if (notesData) {
+          setNotes(notesData.content);
+        }
+      } catch (err) {
+        console.error("Database error:", err);
+        setDbError("Failed to load data from database. Please check your connection.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [isAuthenticated]);
 
   // Close folder menu when clicking outside
   useEffect(() => {
@@ -111,8 +178,17 @@ export default function Notes() {
     setPassword("");
   };
 
-  const handleSaveNotes = () => {
-    localStorage.setItem("notes-content", notes);
+  const handleSaveNotes = async () => {
+    try {
+      const { error } = await client
+        .from("notes_quick")
+        .upsert({ id: "default", content: notes }, { onConflict: "id" });
+
+      if (error) throw error;
+    } catch (err) {
+      console.error("Failed to save notes:", err);
+      setDbError("Failed to save notes");
+    }
   };
 
   const loadMarkdownFile = async (filePath: string, isCustom: boolean, content?: string) => {
@@ -137,42 +213,67 @@ export default function Notes() {
     }
   };
 
-  const handleCreateFile = (e: React.FormEvent) => {
+  const handleCreateFile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFileName.trim()) return;
 
-    const newFile: File = {
+    const newFile = {
       id: Date.now().toString(),
       name: newFileName,
       path: `custom-${Date.now()}`,
-      isCustom: true,
+      is_custom: true,
       content: newFileContent,
-      folderId: selectedFolderId || undefined
+      folder_id: selectedFolderId || null
     };
 
-    const updatedFiles = [...files, newFile];
-    setFiles(updatedFiles);
-    localStorage.setItem("notes-files", JSON.stringify(updatedFiles));
-    localStorage.setItem(`notes-file-${newFile.id}`, newFileContent);
+    try {
+      const { error } = await client
+        .from("notes_files")
+        .insert([newFile]);
 
-    setNewFileName("");
-    setNewFileContent("");
-    setSelectedFolderId(null);
-    setShowNewFileModal(false);
-  };
+      if (error) throw error;
 
-  const handleDeleteFile = (fileId: string) => {
-    const updatedFiles = files.filter(f => f.id !== fileId);
-    setFiles(updatedFiles);
-    localStorage.setItem("notes-files", JSON.stringify(updatedFiles));
-    localStorage.removeItem(`notes-file-${fileId}`);
-    if (activeFile === fileId) {
-      setActiveFile(null);
-      setMarkdownContent("");
+      const updatedFiles: File[] = [...files, {
+        id: newFile.id,
+        name: newFile.name,
+        path: newFile.path,
+        isCustom: true,
+        content: newFileContent,
+        folderId: selectedFolderId || undefined
+      }];
+      setFiles(updatedFiles);
+      setNewFileName("");
+      setNewFileContent("");
+      setSelectedFolderId(null);
+      setShowNewFileModal(false);
+    } catch (err) {
+      console.error("Failed to create file:", err);
+      setDbError("Failed to create file");
     }
   };
 
-  const handleCreateFolder = (e: React.FormEvent) => {
+  const handleDeleteFile = async (fileId: string) => {
+    try {
+      const { error } = await client
+        .from("notes_files")
+        .delete()
+        .eq("id", fileId);
+
+      if (error) throw error;
+
+      const updatedFiles = files.filter(f => f.id !== fileId);
+      setFiles(updatedFiles);
+      if (activeFile === fileId) {
+        setActiveFile(null);
+        setMarkdownContent("");
+      }
+    } catch (err) {
+      console.error("Failed to delete file:", err);
+      setDbError("Failed to delete file");
+    }
+  };
+
+  const handleCreateFolder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFolderName.trim()) return;
 
@@ -182,31 +283,74 @@ export default function Notes() {
       isExpanded: true
     };
 
-    const updatedFolders = [...folders, newFolder];
-    setFolders(updatedFolders);
-    localStorage.setItem("notes-folders", JSON.stringify(updatedFolders));
+    try {
+      const { error } = await client
+        .from("notes_folders")
+        .insert([{ id: newFolder.id, name: newFolder.name, is_expanded: true }]);
 
-    setNewFolderName("");
-    setShowNewFolderModal(false);
+      if (error) throw error;
+
+      const updatedFolders = [...folders, newFolder];
+      setFolders(updatedFolders);
+      setNewFolderName("");
+      setShowNewFolderModal(false);
+    } catch (err) {
+      console.error("Failed to create folder:", err);
+      setDbError("Failed to create folder");
+    }
   };
 
-  const handleToggleFolder = (folderId: string) => {
-    const updatedFolders = folders.map(f =>
-      f.id === folderId ? { ...f, isExpanded: !f.isExpanded } : f
-    );
-    setFolders(updatedFolders);
-    localStorage.setItem("notes-folders", JSON.stringify(updatedFolders));
+  const handleToggleFolder = async (folderId: string) => {
+    const folder = folders.find(f => f.id === folderId);
+    if (!folder) return;
+
+    try {
+      const { error } = await client
+        .from("notes_folders")
+        .update({ is_expanded: !folder.isExpanded })
+        .eq("id", folderId);
+
+      if (error) throw error;
+
+      const updatedFolders = folders.map(f =>
+        f.id === folderId ? { ...f, isExpanded: !f.isExpanded } : f
+      );
+      setFolders(updatedFolders);
+    } catch (err) {
+      console.error("Failed to update folder:", err);
+    }
   };
 
-  const handleDeleteFolder = (folderId: string) => {
-    const updatedFolders = folders.filter(f => f.id !== folderId);
-    const updatedFiles = files.map(f =>
-      f.folderId === folderId ? { ...f, folderId: undefined } : f
-    );
-    setFolders(updatedFolders);
-    setFiles(updatedFiles);
-    localStorage.setItem("notes-folders", JSON.stringify(updatedFolders));
-    localStorage.setItem("notes-files", JSON.stringify(updatedFiles));
+  const handleDeleteFolder = async (folderId: string) => {
+    try {
+      // Move all files from this folder to root in database
+      const { error: filesError } = await client
+        .from("notes_files")
+        .update({ folder_id: null })
+        .eq("folder_id", folderId);
+
+      if (filesError) throw filesError;
+
+      // Delete the folder from database
+      const { error: folderError } = await client
+        .from("notes_folders")
+        .delete()
+        .eq("id", folderId);
+
+      if (folderError) throw folderError;
+
+      // Update local state
+      const updatedFiles = files.map(f =>
+        f.folderId === folderId ? { ...f, folderId: undefined } : f
+      );
+      setFiles(updatedFiles);
+
+      const updatedFolders = folders.filter(f => f.id !== folderId);
+      setFolders(updatedFolders);
+    } catch (err) {
+      console.error("Failed to delete folder:", err);
+      setDbError("Failed to delete folder");
+    }
   };
 
   const handleDragStart = (e: React.DragEvent, fileId: string) => {
@@ -221,51 +365,67 @@ export default function Notes() {
     e.dataTransfer.dropEffect = "move";
   };
 
-  const handleDrop = (e: React.DragEvent, folderId: string) => {
-    e.preventDefault();
-    console.log('=== DROP EVENT ===');
-    console.log('Target folder ID:', folderId);
-    console.log('Dragged file ID:', draggedFileId);
-    console.log('Current files before move:', files.map(f => ({ id: f.id, name: f.name, folderId: f.folderId })));
-
-    if (!draggedFileId) {
-      console.log('ERROR: No draggedFileId found!');
-      return;
-    }
-
-    const draggedFile = files.find(f => f.id === draggedFileId);
-    console.log('Dragging file:', draggedFile);
-
-    // First update the files
-    const updatedFiles = files.map(f =>
-      f.id === draggedFileId ? { ...f, folderId } : f
-    );
-    console.log('Updated files after move:', updatedFiles.map(f => ({ id: f.id, name: f.name, folderId: f.folderId })));
-
-    setFiles(updatedFiles);
-    localStorage.setItem("notes-files", JSON.stringify(updatedFiles));
-
-    // Then auto-expand the folder when a file is dropped into it
-    const updatedFolders = folders.map(f =>
-      f.id === folderId ? { ...f, isExpanded: true } : f
-    );
-    setFolders(updatedFolders);
-    localStorage.setItem("notes-folders", JSON.stringify(updatedFolders));
-
-    setDraggedFileId(null);
-    console.log('=== DROP COMPLETE ===');
-  };
-
-  const handleDropOnRoot = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent, folderId: string) => {
     e.preventDefault();
     if (!draggedFileId) return;
 
-    const updatedFiles = files.map(f =>
-      f.id === draggedFileId ? { ...f, folderId: undefined } : f
-    );
-    setFiles(updatedFiles);
-    localStorage.setItem("notes-files", JSON.stringify(updatedFiles));
-    setDraggedFileId(null);
+    try {
+      // Update file folder in database
+      const { error } = await client
+        .from("notes_files")
+        .update({ folder_id: folderId })
+        .eq("id", draggedFileId);
+
+      if (error) throw error;
+
+      // Update local state
+      const updatedFiles = files.map(f =>
+        f.id === draggedFileId ? { ...f, folderId } : f
+      );
+      setFiles(updatedFiles);
+
+      // Auto-expand folder
+      const { error: folderError } = await client
+        .from("notes_folders")
+        .update({ is_expanded: true })
+        .eq("id", folderId);
+
+      if (folderError) throw folderError;
+
+      const updatedFolders = folders.map(f =>
+        f.id === folderId ? { ...f, isExpanded: true } : f
+      );
+      setFolders(updatedFolders);
+
+      setDraggedFileId(null);
+    } catch (err) {
+      console.error("Failed to move file:", err);
+      setDbError("Failed to move file");
+    }
+  };
+
+  const handleDropOnRoot = async (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!draggedFileId) return;
+
+    try {
+      // Remove file from folder in database
+      const { error } = await client
+        .from("notes_files")
+        .update({ folder_id: null })
+        .eq("id", draggedFileId);
+
+      if (error) throw error;
+
+      const updatedFiles = files.map(f =>
+        f.id === draggedFileId ? { ...f, folderId: undefined } : f
+      );
+      setFiles(updatedFiles);
+      setDraggedFileId(null);
+    } catch (err) {
+      console.error("Failed to move file:", err);
+      setDbError("Failed to move file");
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -287,44 +447,79 @@ export default function Notes() {
     reader.readAsText(file);
   };
 
-  const handleSaveUploadedFile = (e: React.FormEvent) => {
+  const handleSaveUploadedFile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!uploadFileName.trim()) return;
 
-    const newFile: File = {
+    const newFile = {
       id: Date.now().toString(),
       name: uploadFileName,
       path: `custom-${Date.now()}`,
-      isCustom: true,
+      is_custom: true,
       content: uploadFileContent,
-      folderId: selectedFolderId || undefined
+      folder_id: selectedFolderId || null
     };
 
-    const updatedFiles = [...files, newFile];
-    setFiles(updatedFiles);
-    localStorage.setItem("notes-files", JSON.stringify(updatedFiles));
-    localStorage.setItem(`notes-file-${newFile.id}`, uploadFileContent);
+    try {
+      const { error } = await client
+        .from("notes_files")
+        .insert([newFile]);
 
-    setUploadFileName("");
-    setUploadFileContent("");
-    setSelectedFolderId(null);
-    setShowUploadModal(false);
+      if (error) throw error;
+
+      const updatedFiles: File[] = [...files, {
+        id: newFile.id,
+        name: newFile.name,
+        path: newFile.path,
+        isCustom: true,
+        content: uploadFileContent,
+        folderId: selectedFolderId || undefined
+      }];
+      setFiles(updatedFiles);
+
+      setUploadFileName("");
+      setUploadFileContent("");
+      setSelectedFolderId(null);
+      setShowUploadModal(false);
+    } catch (err) {
+      console.error("Failed to upload file:", err);
+      setDbError("Failed to upload file");
+    }
   };
 
-  const handleMoveFileToFolder = (fileId: string, folderId: string | null) => {
-    const updatedFiles = files.map(f =>
-      f.id === fileId ? { ...f, folderId: folderId || undefined } : f
-    );
-    setFiles(updatedFiles);
-    localStorage.setItem("notes-files", JSON.stringify(updatedFiles));
+  const handleMoveFileToFolder = async (fileId: string, folderId: string | null) => {
+    try {
+      // Update file folder in database
+      const { error } = await client
+        .from("notes_files")
+        .update({ folder_id: folderId })
+        .eq("id", fileId);
 
-    // If moving to a folder, expand it
-    if (folderId) {
-      const updatedFolders = folders.map(f =>
-        f.id === folderId ? { ...f, isExpanded: true } : f
+      if (error) throw error;
+
+      // Update local state
+      const updatedFiles = files.map(f =>
+        f.id === fileId ? { ...f, folderId: folderId || undefined } : f
       );
-      setFolders(updatedFolders);
-      localStorage.setItem("notes-folders", JSON.stringify(updatedFolders));
+      setFiles(updatedFiles);
+
+      // If moving to a folder, expand it
+      if (folderId) {
+        const { error: folderError } = await client
+          .from("notes_folders")
+          .update({ is_expanded: true })
+          .eq("id", folderId);
+
+        if (folderError) throw folderError;
+
+        const updatedFolders = folders.map(f =>
+          f.id === folderId ? { ...f, isExpanded: true } : f
+        );
+        setFolders(updatedFolders);
+      }
+    } catch (err) {
+      console.error("Failed to move file:", err);
+      setDbError("Failed to move file");
     }
   };
 
@@ -367,8 +562,32 @@ export default function Notes() {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-text-secondary">Loading notes...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen">
+      {/* Error display */}
+      {dbError && (
+        <div className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+          <p className="text-sm">{dbError}</p>
+          <button
+            onClick={() => setDbError(null)}
+            className="text-xs underline mt-1 hover:text-gray-200"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Sidebar with file list */}
       <aside className={`w-64 bg-bg-secondary border-r border-border p-4 overflow-y-auto transition-all duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full absolute'}`}>
         <div className="flex items-center justify-between mb-6">
