@@ -84,11 +84,10 @@ export default function App() {
           {/* Content Area */}
           <div
             ref={contentRef}
-            className={`flex-1 mt-4 transition-all duration-200 ${
-              isTransitioning
-                ? "opacity-0 translate-y-2"
-                : "opacity-100 translate-y-0"
-            }`}
+            className={`flex-1 mt-4 transition-all duration-200 ${isTransitioning
+              ? "opacity-0 translate-y-2"
+              : "opacity-100 translate-y-0"
+              }`}
           >
             {renderSection()}
           </div>
