@@ -2,6 +2,13 @@ import { SectionHeader, useInView } from "../components/Shared";
 
 const projects = [
   {
+    title: "Neighbr - Neighborhood Connection Platform",
+    url: "https://neighbr-khushal.vercel.app/",
+    description:
+      "Built a location-based social platform using Next.js 14 and TypeScript for hyperlocal community interaction. Implemented secure authentication with NextAuth.js and real-time messaging via Socket.io. Integrated Leaflet and OpenStreetMap for interactive maps, geocoding, and proximity-based feeds. Used Prisma ORM with PostgreSQL for scalable data modeling and Cloudinary for media uploads. Added push notifications using Web Push API and service workers.",
+    thumbnail: "/neighbr.png",
+  },
+  {
     title: "ShinkAI - AI Resume & Interview Coach",
     url: "https://shinkai-khushal.vercel.app/",
     description:

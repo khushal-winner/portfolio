@@ -25,6 +25,17 @@
   ],
   "projects": [
     {
+      "title": "Neighbr -- Neighborhood Connection Platform",
+      "links": "\\href{https://neighbr-khushal.vercel.app/}{\\underline{Live} \\href{https://github.com/khushal-winner/neighbr}{\\underline{GitHub}",
+      "description": [
+        "Built a location-based social platform using \\textbf{Next.js 14",
+        "Implemented secure authentication with \\textbf{NextAuth.js",
+        "Integrated \\textbf{Leaflet",
+        "Used \\textbf{Prisma ORM",
+        "Added push notifications using \\textbf{Web Push API"
+      ]
+    },
+    {
       "title": "ShinkAI -- AI Resume \\& Interview Coach",
       "links": "\\href{https://shinkai-khushal.vercel.app/}{\\underline{Live} \\href{https://github.com/khushal-winner/shinkai}{\\underline{GitHub}",
       "description": [

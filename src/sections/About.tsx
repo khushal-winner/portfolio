@@ -4,6 +4,13 @@ import RecentPRs from "./RecentPRs";
 
 const featuredProjects = [
   {
+    title: "Neighbr - Neighborhood Connection Platform",
+    url: "https://neighbr-khushal.vercel.app/",
+    description:
+      "Built a location-based social platform using Next.js 14 and TypeScript for hyperlocal community interaction with real-time messaging and interactive maps.",
+    thumbnail: "/neighbr.png",
+  },
+  {
     title: "ShinkAI - AI Resume & Interview Coach",
     url: "https://shinkai-khushal.vercel.app/", // Placeholder
     description:
