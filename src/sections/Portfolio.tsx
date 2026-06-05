@@ -9,6 +9,13 @@ const projects = [
     thumbnail: "/neighbr.png",
   },
   {
+    title: "Pollify - Real-Time Polling Application",
+    url: "https://pollify-khushal.vercel.app/",
+    description:
+      "Built a modern polling platform using Next.js 16 (App Router), React 19, and TypeScript. Implemented secure authentication with Appwrite, supporting email/password login and anonymous guest sessions. Designed glassmorphic UI with TailwindCSS v4 featuring custom design system and dark mode. Enabled real-time poll creation with custom expiration times and dynamic updates using Appwrite Database real-time listeners. Created compound unique index at the database level to prevent duplicate voting per poll. Used Appwrite Cloud BaaS for database, authentication, and real-time document storage. Built RESTful API routes in app/api/* for polls, authentication, and session management.",
+    thumbnail: "/pollify.png",
+  },
+  {
     title: "ShinkAI - AI Resume & Interview Coach",
     url: "https://shinkai-khushal.vercel.app/",
     description:

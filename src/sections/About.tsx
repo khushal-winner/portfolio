@@ -11,6 +11,13 @@ const featuredProjects = [
     thumbnail: "/neighbr.png",
   },
   {
+    title: "Pollify - Real-Time Polling Application",
+    url: "https://pollify-khushal.vercel.app/",
+    description:
+      "Built a modern polling platform using Next.js 16, React 19, and TypeScript with glassmorphic UI, Appwrite auth, and real-time poll updates.",
+    thumbnail: "/pollify.png",
+  },
+  {
     title: "ShinkAI - AI Resume & Interview Coach",
     url: "https://shinkai-khushal.vercel.app/", // Placeholder
     description:
@@ -52,13 +59,9 @@ export default function About() {
                         stay up-to-date with the latest technologies and frameworks in the industry.
                     </p> */}
           <p>
-            I'm <span className="font-medium">Khushal Malhotra</span>, I am a
-            results-oriented and detail-driven engineer with a strong
-            programming background and a passion for ensuring software
-            reliability. Currently, I am building web applications using
-            Next.js, Typescript, Tailwind CSS, and MongoDB. I am seeking
-            opportunities to contribute and enhance my skills and am currently
-            learning AI to make my web apps more interesting.
+           I'm Khushal Malhotra, a detail‑driven, systems‑oriented engineer who designs and ships production‑grade, event‑driven platforms that scale. I own the full stack — from database schema and distributed messaging to deployment and monitoring — and I obsess over reliability, fault tolerance, and clean architecture.
+
+
           </p>
         </div>
       </div>
