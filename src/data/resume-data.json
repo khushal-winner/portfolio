@@ -1,0 +1,63 @@
+{
+  "experience": [],
+  "education": [],
+  "skills": [
+    {
+      "category": "Languages",
+      "items": "JavaScript, TypeScript, C++, HTML, CSS"
+    },
+    {
+      "category": "Frameworks",
+      "items": "React.js, Node.js, Express.js, Socket.io, Next.js, Zustand"
+    },
+    {
+      "category": "Design and UI Tools",
+      "items": "Tailwind CSS, DaisyUI, Chakra UI, Shadcn UI, Git, Framer Motion"
+    },
+    {
+      "category": "ORM and Database",
+      "items": "MongoDB, Neon (PostgreSQL), Redis, Mongoose, Prisma"
+    },
+    {
+      "category": "Authentication \\& Dev Tools",
+      "items": "Clerk, JWT, Stripe, Convex, Webhooks"
+    }
+  ],
+  "projects": [
+    {
+      "title": "ShinkAI -- AI Resume \\& Interview Coach",
+      "links": "\\href{https://shinkai-khushal.vercel.app/}{\\underline{Live} \\href{https://github.com/khushal-winner/shinkai}{\\underline{GitHub}",
+      "description": [
+        "Built an AI career assistant using \\textbf{Next.js 15",
+        "Used \\textbf{Clerk",
+        "Implemented markdown-based editors with \\textbf{@uiw/react-md-editor",
+        "Created dynamic dashboards with \\textbf{Recharts",
+        "Integrated \\textbf{Prisma ORM",
+        "Ensured dark mode support and responsiveness using \\textbf{next-themes"
+      ]
+    },
+    {
+      "title": "Volty - AI Code Companion:",
+      "links": "\\href{https://volty-green.vercel.app}{Live Link} \\href{https://github.com/khushal-winner/Volt}{GitHub Code}",
+      "description": [
+        "Built an AI-powered micro SaaS platform using \\textbf{Next.js 15",
+        "Integrated \\textbf{Sandpack",
+        "Integrated AI code generation and chat assistant using \\textbf{Google Gemini API",
+        "Designed a token-based pricing system with four tiers, from Free (50K tokens) to Unlimited (\\(\\infty\\) tokens).",
+        "Built persistent cloud storage with real-time project syncing across devices using the Convex database.",
+        "Created a responsive UI using \\textbf{Tailwind CSS"
+      ]
+    },
+    {
+      "title": "Chaty -- Chat App",
+      "links": "\\href{https://chatu-chat-app-1.onrender.com/login}{\\underline{Live} \\href{https://github.com/khushal-winner/Chatu-chat-app}{\\underline{GitHub}",
+      "description": [
+        "Developed a full-stack chat web application using \\textbf{MongoDB, Express.js, React.js, Node.js",
+        "Implemented authentication and authorization with \\textbf{JWT",
+        "Enabled real-time messaging and online user status using \\textbf{Socket.io",
+        "Designed a responsive and modern UI using \\textbf{TailwindCSS",
+        "Managed global state efficiently using \\textbf{Zustand"
+      ]
+    }
+  ]
+}

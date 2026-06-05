@@ -5,10 +5,9 @@ import About from "./sections/About";
 import Resume from "./sections/Resume";
 import Portfolio from "./sections/Portfolio";
 import Contact from "./sections/Contact";
-import Notes from "./sections/Notes";
 // import Gallery from './sections/Gallery';
 
-const sections = ["about", "resume", "projects", "contact", "notes"] as const;
+const sections = ["about", "resume", "projects", "contact"] as const;
 type Section = (typeof sections)[number];
 
 export default function App() {
@@ -58,22 +57,11 @@ export default function App() {
         return <Portfolio />;
       case "contact":
         return <Contact />;
-      case "notes":
-        return <Notes />;
       // case 'gallery': return <Gallery />;
       default:
         return <About />;
     }
   };
-
-  // Special layout for notes route
-  if (activeSection === "notes") {
-    return (
-      <div className="min-h-screen bg-bg-primary">
-        {renderSection()}
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-bg-primary flex justify-center">
